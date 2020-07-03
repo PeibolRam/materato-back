@@ -48,7 +48,10 @@ app.post('/api/users/login', (req, res) => {
             user.generateToken((err, user)=> {
                 if(err) return res.status(400).send(err)
                 res.cookie('b_auth', user.token).status(200).json(
-                    {loginSuccess: true}
+                    {
+                        loginSuccess: true,
+                        token: user.token
+                    }
                 )
             })
         })
@@ -57,25 +60,21 @@ app.post('/api/users/login', (req, res) => {
 
 app.get('/api/users/auth', auth, (req, res) => {
     res.status(200).json({
-        isAuth: true,
-        email: req.user.email,
-        name: req.user.name,
-        lastname: req.user.lastname,
-        role: req.user.role
+        isAuth: true
     })
 })
 
 app.get('/api/user/logout', auth, (req, res) => {
-    User.findOneAndUpdate(
-        {_id: req.user._id},
-        {token: ''},
-        (err, doc) => {
-            if(err) return res.json({success: false, err})
+
+    User.findOneAndUpdate({token: req.headerToken}, {token: ''}, (err, user)=> {
+        if(err ) {
+            return res.json({success: false, err})
+        } else {
             return res.status(200).json({
                 success: true
             })
         }
-    )
+    });
 })
 
 
