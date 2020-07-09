@@ -24,12 +24,11 @@ let auth = (req, res, next) => {
             res.json({ 
                 isAuth: false,
                 error: true,
-                message: "Invalid ", 
+                message: "Invalid token", 
                 isInvalidToken: true 
             });
         } else {
-
-            User.findByToken(headerToken, (err, user)=> {
+            User.findByToken(token, (err, user)=> {
                 if(err ) {
                     res.json({ 
                         isAuth: false,
@@ -39,7 +38,7 @@ let auth = (req, res, next) => {
                      });
                 } else {
                     req.user = user;
-                    req.headerToken = headerToken;
+                    req.token = token;
                     next();
                 }
             });

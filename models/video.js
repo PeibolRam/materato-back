@@ -1,6 +1,6 @@
 const mongoose = require('mongoose')
 
-const courseSchema = mongoose.Schema({
+const videoSchema = mongoose.Schema({
     title: {
         type: String,
         required: true,
@@ -19,15 +19,14 @@ const courseSchema = mongoose.Schema({
         type: Date,
         required: true
     },
-    videos: [
-        {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: 'Video'
-        }
-    ]
+    course: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Course',
+        required: true
+    }
 
 })
 
-const Course = mongoose.model('Course', courseSchema, "courses")
+const Video = mongoose.model('Video', videoSchema, "videos")
 
-module.exports = { Course }
+module.exports = { Video }

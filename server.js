@@ -60,9 +60,51 @@ app.post('/api/users/login', (req, res) => {
 
 app.get('/api/users/auth', auth, (req, res) => {
     res.status(200).json({
+        user: {
+            id: req.user._id,
+            name: req.user.name,
+            lastname: req.user.lastname,
+            email: req.user.email,
+            role: req.user.role,
+            premium: req.user.premium,
+        },
         isAuth: true
     })
 })
+
+app.put('/api/users/:id', auth, (req, res) => {
+    var itemId = req.params.id;
+
+    User.findByIdAndUpdate( itemId,{
+        name: req.body.name,
+        lastname: req.body.lastname
+        }, (err, user) => {
+        if(err ) {
+            return res.json({success: false, err})
+        } else {
+            return res.status(200).json({
+                success: true
+            })
+        }
+    })
+});
+
+// app.put('/api/users/pass/:id', auth, (req, res) => {
+//     var itemId = req.params.id;
+
+//     User.findByIdAndUpdate( itemId,{
+//         name: req.body.name,
+//         lastname: req.body.lastname
+//         }, (err, user) => {
+//         if(err ) {
+//             return res.json({success: false, err})
+//         } else {
+//             return res.status(200).json({
+//                 success: true
+//             })
+//         }
+//     })
+// });
 
 app.get('/api/user/logout', auth, (req, res) => {
 
