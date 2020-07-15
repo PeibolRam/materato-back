@@ -1,6 +1,7 @@
 const express = require('express')
 const mongoose = require('mongoose')
 const cookieParser = require('cookie-parser')
+const bcrypt = require('bcrypt')
 
 const app = express()
 
@@ -77,7 +78,8 @@ app.put('/api/users/:id', auth, (req, res) => {
 
     User.findByIdAndUpdate( itemId,{
         name: req.body.name,
-        lastname: req.body.lastname
+        lastname: req.body.lastname,
+        email: req.body.email
         }, (err, user) => {
         if(err ) {
             return res.json({success: false, err})
@@ -89,22 +91,35 @@ app.put('/api/users/:id', auth, (req, res) => {
     })
 });
 
-// app.put('/api/users/pass/:id', auth, (req, res) => {
-//     var itemId = req.params.id;
+app.put('/api/users/pass/:id', auth, (req, res) => {
+    try {
+        const itemId = req.params.id
+        const userRequest = req.body;
+        // const newPassword = bcrypt.hash(userRequest.password, process.env.ROUNDS); 
+        bcrypt.hash(userRequest.password, 10, (err, hash) => {  
+            if(err ) {
+                return res.json({success: false, err})
+            }else{
+                User.findByIdAndUpdate( itemId,{
+                    password: hash
+                    }, (err, user) => {
+                    if(err ) {
+                        return res.json({success: false, err})
+                    } else {
+                        return res.status(200).json({
+                            success: true,
+                            newPass: hash
+                        })
+                    }
+                })
+            }
+        });       
 
-//     User.findByIdAndUpdate( itemId,{
-//         name: req.body.name,
-//         lastname: req.body.lastname
-//         }, (err, user) => {
-//         if(err ) {
-//             return res.json({success: false, err})
-//         } else {
-//             return res.status(200).json({
-//                 success: true
-//             })
-//         }
-//     })
-// });
+    } catch(error) {
+        res.json({ message: error.toString() });
+    }
+
+});
 
 app.get('/api/user/logout', auth, (req, res) => {
 

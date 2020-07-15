@@ -1,7 +1,7 @@
 const mongoose = require('mongoose')
 const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
-const SALT_I = 10
+const SALT_I = process.env.ROUNDS
 
 require('dotenv').config()
 
@@ -56,6 +56,7 @@ userSchema.pre('save', async function (next){
         }
     }
 })
+
 
 userSchema.methods.comparePassword = function(candidatePassword, cb){
     bcrypt.compare(candidatePassword, this.password, function(err, isMatch){
